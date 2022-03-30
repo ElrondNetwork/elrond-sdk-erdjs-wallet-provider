@@ -11,14 +11,6 @@ export interface IDappProvider {
     signMessage(transaction: ISignableMessage, options?: {callbackUrl?: string}): Promise<void>;
 }
 
-export interface ISignature {
-    hex(): string;
-}
-
-export interface IAddress {
-    bech32(): string;
-}
-
 export interface ITransaction {
     toPlainObject(): any;
 }
