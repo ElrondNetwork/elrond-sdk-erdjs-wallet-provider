@@ -1,5 +1,5 @@
 import qs from "qs";
-import { IDappProvider } from "./interface";
+import { IDappProvider, ISignableMessage, ITransaction } from "./interface";
 import {
     WALLET_PROVIDER_CALLBACK_PARAM,
     WALLET_PROVIDER_CALLBACK_PARAM_TX_SIGNED,
@@ -8,15 +8,9 @@ import {
     WALLET_PROVIDER_SEND_TRANSACTION_URL,
     WALLET_PROVIDER_SIGN_TRANSACTION_URL,
 } from "./constants";
-import { Transaction } from "../transaction";
-import { SignableMessage } from "../signableMessage";
-import { ErrInvalidTxSignReturnValue, ErrNotImplemented } from "../errors";
-import { Signature } from "../signature";
-import { Nonce } from "../nonce";
-import { Balance } from "../balance";
-import { Address } from "../address";
-import { ChainID, GasLimit, GasPrice, TransactionOptions, TransactionVersion } from "../networkParams";
-import { TransactionPayload } from "../transactionPayload";
+import { ErrInvalidTxSignReturnValue, ErrNotImplemented } from "./errors";
+import { Signature } from "./signature";
+import { UserAddress } from "./userAddress";
 
 interface TransactionMessage {
     receiver: string;
@@ -35,7 +29,7 @@ export class WalletProvider implements IDappProvider {
      * Creates a new WalletProvider
      * @param walletURL
      */
-    constructor(walletURL: string = '') {
+    constructor(walletURL: string) {
         this.walletUrl = walletURL;
     }
 
@@ -119,7 +113,7 @@ export class WalletProvider implements IDappProvider {
      * @param transaction
      * @param options
      */
-    async sendTransaction(transaction: Transaction, options?: { callbackUrl?: string }): Promise<Transaction> {
+    async sendTransaction(transaction: ITransaction, options?: { callbackUrl?: string }): Promise<ITransaction> {
         let plainTransaction = WalletProvider.prepareWalletTransaction(transaction);
         let url = `${this.baseWalletUrl()}${WALLET_PROVIDER_SEND_TRANSACTION_URL}?${this.buildTransactionUrl(plainTransaction)}`;
 
@@ -133,7 +127,7 @@ export class WalletProvider implements IDappProvider {
      * @param transactions
      * @param options
      */
-    async signTransactions(transactions: Transaction[], options?: { callbackUrl?: string }): Promise<Transaction[]> {
+    async signTransactions(transactions: ITransaction[], options?: { callbackUrl?: string }): Promise<ITransaction[]> {
         const jsonToSend: any = {};
         transactions.map(tx => {
             let plainTx =  WalletProvider.prepareWalletTransaction(tx);
@@ -157,7 +151,7 @@ export class WalletProvider implements IDappProvider {
      * @param transaction
      * @param options
      */
-    async signTransaction(transaction: Transaction, options?: { callbackUrl?: string }): Promise<Transaction> {
+    async signTransaction(transaction: ITransaction, options?: { callbackUrl?: string }): Promise<ITransaction> {
         let plainTransaction = WalletProvider.prepareWalletTransaction(transaction);
         let url = `${this.baseWalletUrl()}${WALLET_PROVIDER_SIGN_TRANSACTION_URL}?${this.buildTransactionUrl(plainTransaction)}`;
 
@@ -165,8 +159,8 @@ export class WalletProvider implements IDappProvider {
         return transaction;
     }
 
-    getTransactionsFromWalletUrl(): Transaction[] {
-        const transactions: Transaction[] = [];
+    getTransactionsFromWalletUrl(): ITransaction[] {
+        const transactions: ITransaction[] = [];
         const urlParams = qs.parse(window.location.search.slice(1));
         if (!WalletProvider.isTxSignReturnSuccess(urlParams)) {
             return transactions;
@@ -179,7 +173,7 @@ export class WalletProvider implements IDappProvider {
      * Method will be available once the ElrondWallet hook will be implemented
      * @param _
      */
-    async signMessage(_: SignableMessage): Promise<SignableMessage> {
+    async signMessage(_: ISignableMessage): Promise<ISignableMessage> {
         throw new ErrNotImplemented();
     }
 
@@ -187,7 +181,7 @@ export class WalletProvider implements IDappProvider {
         return urlParams.hasOwnProperty(WALLET_PROVIDER_CALLBACK_PARAM) && urlParams[WALLET_PROVIDER_CALLBACK_PARAM] === WALLET_PROVIDER_CALLBACK_PARAM_TX_SIGNED;
     }
 
-    static getTxSignReturnValue(urlParams: any): Transaction[] {
+    static getTxSignReturnValue(urlParams: any): ITransaction[] {
         // "options" property is optional (it isn't always received from the Web Wallet)
         const expectedProps = ["nonce", "value", "receiver", "sender", "gasPrice",
             "gasLimit", "data", "chainID", "version", "signature"];
@@ -205,38 +199,41 @@ export class WalletProvider implements IDappProvider {
             }
         }
 
-        const transactions: Transaction[] = [];
+        const transactions: ITransaction[] = [];
         for (let i = 0; i < expectedLength; i++) {
-            let tx = new Transaction({
-                nonce: new Nonce(urlParams["nonce"][i]),
-                value: Balance.fromString(<string>urlParams["value"][i]),
-                receiver: Address.fromString(<string>urlParams["receiver"][i]),
-                gasPrice: new GasPrice(parseInt(<string>urlParams["gasPrice"][i])),
-                gasLimit: new GasLimit(parseInt(<string>urlParams["gasLimit"][i])),
-                data: new TransactionPayload(<string>urlParams["data"][i]),
-                chainID: new ChainID(<string>urlParams["chainID"][i]),
-                version: new TransactionVersion(parseInt(<string>urlParams["version"][i])),
+            let plainObject = {
+                nonce: parseInt(urlParams["nonce"][i]),
+                value: urlParams["value"][i],
+                receiver: urlParams["receiver"][i],
+                gasPrice: parseInt(urlParams["gasPrice"][i]),
+                gasLimit: parseInt(urlParams["data"][i]),
+                data: urlParams["data"][i],
+                chainID: urlParams["chainID"][i],
+                version: parseInt(urlParams["version"][i]),
                 // Handle the optional "options" property.
                 ...(urlParams["options"] && urlParams["options"][i] ? {
-                    options: new TransactionOptions(parseInt(<string>urlParams["options"][i]))
+                    options: parseInt(urlParams["options"][i])
                 } : {})
-            });
-            tx.applySignature(new Signature(<string>urlParams["signature"][i]), Address.fromString(<string>urlParams["sender"][i]));
+            };
+
+            let signature = Signature.fromHex(urlParams["signature"][i]);
+            let signedBy = new UserAddress(urlParams["sender"][i]);
+
+            let tx = {};  // TODO: factory.fromPlainObject.
+            tx.applySignature(signature, signedBy);
             transactions.push(tx);
         }
 
         return transactions;
     }
 
-    static prepareWalletTransaction(transaction: Transaction): any {
+    static prepareWalletTransaction(transaction: ITransaction): any {
         let plainTransaction = transaction.toPlainObject();
 
-        // We adjust the fields, in order to make them compatible with what the wallet expected
-        plainTransaction["nonce"] = transaction.getNonce().valueOf();
-        plainTransaction["data"] = transaction.getData().valueOf().toString();
-        plainTransaction["value"] = transaction.getValue().toString();
-        plainTransaction["gasPrice"] = transaction.getGasPrice().valueOf();
-        plainTransaction["gasLimit"] = transaction.getGasLimit().valueOf();
+        // We adjust the data field, in order to make it compatible with what the web wallet expects.
+        if (plainTransaction.data) {
+            plainTransaction.data = Buffer.from(plainTransaction.data, "base64").toString();
+        }
 
         return plainTransaction;
     }
