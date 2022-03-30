@@ -130,7 +130,7 @@ export class WalletProvider implements IDappProvider {
         const jsonToSend: any = {};
         transactions.map(tx => {
             let plainTx =  WalletProvider.prepareWalletTransaction(tx);
-            for ( let txProp in plainTx ) {
+            for (let txProp in plainTx) {
                 if (plainTx.hasOwnProperty(txProp) && !jsonToSend.hasOwnProperty(txProp)) {
                     jsonToSend[txProp] = [];
                 }
@@ -144,6 +144,7 @@ export class WalletProvider implements IDappProvider {
     }
 
     /**
+     * TODO: Perhaps only keep the plural version?
      * Packs a {@link Transaction} and fetches correct redirect URL from the wallet API. Then redirects
      *   the client to the sign transaction hook
      * @param transaction
