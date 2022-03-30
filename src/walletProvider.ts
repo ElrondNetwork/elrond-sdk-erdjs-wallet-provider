@@ -1,5 +1,5 @@
 import qs from "qs";
-import { IDappProvider, ISignedTransaction, ISignableMessage, ITransaction, ITransactionFactory } from "./interface";
+import { ISignedTransaction, ITransaction, ITransactionFactory } from "./interface";
 import {
     WALLET_PROVIDER_CALLBACK_PARAM,
     WALLET_PROVIDER_CALLBACK_PARAM_TX_SIGNED,
@@ -20,7 +20,7 @@ interface TransactionMessage {
     options?: number;
 }
 
-export class WalletProvider implements IDappProvider {
+export class WalletProvider {
     private readonly walletUrl: string;
     private readonly transactionFactory: ITransactionFactory;
 
@@ -31,28 +31,6 @@ export class WalletProvider implements IDappProvider {
     constructor(walletURL: string, transactionFactory: ITransactionFactory) {
         this.walletUrl = walletURL;
         this.transactionFactory = transactionFactory;
-    }
-
-    /**
-     * Waits for the wallet iframe to ping that it has been initialised
-     */
-    async init(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * Returns if the wallet iframe is up and running
-     */
-    isInitialized(): boolean {
-        return true;
-    }
-
-    /**
-     * Unlike isInitialized, isConnected returns true if the user alredy went through the login process
-     *  and has the wallet session active
-     */
-    async isConnected(): Promise<boolean> {
-        return false;
     }
 
     /**
@@ -70,6 +48,7 @@ export class WalletProvider implements IDappProvider {
         }
 
         const redirect = `${this.baseWalletUrl()}${WALLET_PROVIDER_CONNECT_URL}?${callbackUrl}${token}`;
+        // TODO: Perhaps do not delay, just like for signTransactions()?
         await new Promise((resolve) => {
             setTimeout(() => {
               window.location.href = redirect;
@@ -77,6 +56,7 @@ export class WalletProvider implements IDappProvider {
             }, 10);
           });
 
+        // TODO: Perhaps do not return anything?
         return window.location.href;
     }
 
@@ -90,6 +70,7 @@ export class WalletProvider implements IDappProvider {
         }
 
         const redirect = `${this.baseWalletUrl()}${WALLET_PROVIDER_DISCONNECT_URL}?${callbackUrl}`;
+        // TODO: Perhaps do not delay, just like for signTransactions()?
         await new Promise((resolve) => {
             setTimeout(() => {
               window.location.href = redirect;
@@ -97,14 +78,8 @@ export class WalletProvider implements IDappProvider {
             }, 10);
           });
 
+        // TODO: Perhaps do not return anything?
         return true;
-    }
-
-    /**
-     * Returns currently connected address. Empty string if not connected
-     */
-    async getAddress(): Promise<string> {
-        throw new ErrNotImplemented();
     }
 
     /**
@@ -166,14 +141,6 @@ export class WalletProvider implements IDappProvider {
         return this.getTxSignReturnValue(urlParams);
     }
 
-    /**
-     * Method will be available once the ElrondWallet hook will be implemented
-     * @param _
-     */
-    async signMessage(_: ISignableMessage): Promise<void> {
-        throw new ErrNotImplemented();
-    }
-
     static isTxSignReturnSuccess(urlParams: any): boolean {
         return urlParams.hasOwnProperty(WALLET_PROVIDER_CALLBACK_PARAM) && urlParams[WALLET_PROVIDER_CALLBACK_PARAM] === WALLET_PROVIDER_CALLBACK_PARAM_TX_SIGNED;
     }
@@ -205,7 +172,7 @@ export class WalletProvider implements IDappProvider {
                 receiver: urlParams["receiver"][i],
                 sender: urlParams["sender"][i],
                 gasPrice: parseInt(urlParams["gasPrice"][i]),
-                gasLimit: parseInt(urlParams["data"][i]),
+                gasLimit: parseInt(urlParams["gasLimit"][i]),
                 data: urlParams["data"][i],
                 chainID: urlParams["chainID"][i],
                 version: parseInt(urlParams["version"][i]),
