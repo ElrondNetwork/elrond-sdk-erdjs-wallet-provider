@@ -8,6 +8,7 @@
     "out/**/*"
   ],
   "scripts": {
+    "test": "mocha",
     "compile": "tsc -p tsconfig.json",
     "compile-examples": "npm run compile && browserify examples/app.js -o out-examples/app.js --standalone app -p esmify",
     "pretest": "npm run compile",

@@ -5,10 +5,10 @@ export interface IDappProvider {
     getAddress(): Promise<string>;
     isInitialized(): boolean;
     isConnected(): Promise<boolean>;
-    sendTransaction(transaction: ITransaction, options?: {callbackUrl?: string}): Promise<ITransaction>;
-    signTransaction(transaction: ITransaction, options?: {callbackUrl?: string}): Promise<ITransaction>;
-    signTransactions(transaction: Array<ITransaction>, options?: {callbackUrl?: string}): Promise<Array<ITransaction>>;
-    signMessage(transaction: ISignableMessage, options?: {callbackUrl?: string}): Promise<ISignableMessage>;
+    sendTransaction(transaction: ITransaction, options?: {callbackUrl?: string}): Promise<void>;
+    signTransaction(transaction: ITransaction, options?: {callbackUrl?: string}): Promise<void>;
+    signTransactions(transaction: Array<ITransaction>, options?: {callbackUrl?: string}): Promise<void>;
+    signMessage(transaction: ISignableMessage, options?: {callbackUrl?: string}): Promise<void>;
 }
 
 export interface ISignature {
@@ -21,8 +21,14 @@ export interface IAddress {
 
 export interface ITransaction {
     toPlainObject(): any;
-    applySignature(signature: ISignature, signedBy: IAddress): void;
+}
+
+export interface ISignedTransaction {
 }
 
 export interface ISignableMessage {
+}
+
+export interface ITransactionFactory {
+    fromPlainObject(obj: any): ISignedTransaction;
 }
