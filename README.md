@@ -4,12 +4,12 @@ Signing provider for dApps: Elrond (Web) Wallet.
 
 ## Distribution
 
-[npm](https://www.npmjs.com/package/@elrondnetwork/erdjs-wallet-provider)
+[npm](https://www.npmjs.com/package/@elrondnetwork/erdjs-web-wallet-provider)
 
 ## Installation
 
 ```
-npm install @elrondnetwork/erdjs-wallet-provider
+npm install @elrondnetwork/erdjs-web-wallet-provider
 ```
 
 ### Building the library
