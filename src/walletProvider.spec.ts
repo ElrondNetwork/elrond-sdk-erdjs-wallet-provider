@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { ISignedTransaction, ITransaction, ITransactionFactory } from "./interface";
+import { ITransaction } from "./interface";
 import { WalletProvider } from "./walletProvider";
 
 declare global {
@@ -26,7 +26,7 @@ describe("test wallet provider", () => {
   });
 
   it('login redirects correctly', async () => {
-    const walletProvider = new WalletProvider("http://mocked-wallet.com", new TestTransactionFactory());
+    const walletProvider = new WalletProvider("http://mocked-wallet.com");
 
     const returnUrl = await walletProvider.login();
     assert.equal(returnUrl, "http://mocked-wallet.com/hook/login?callbackUrl=http://return-to-wallet");
@@ -39,7 +39,7 @@ describe("test wallet provider", () => {
   });
 
   it('logout redirects correctly', async () => {
-    const walletProvider = new WalletProvider("http://mocked-wallet.com", new TestTransactionFactory());
+    const walletProvider = new WalletProvider("http://mocked-wallet.com");
 
     await walletProvider.logout();
     assert.equal(window.location.href, "http://mocked-wallet.com/hook/logout?callbackUrl=http://return-to-wallet");
@@ -49,7 +49,7 @@ describe("test wallet provider", () => {
   });
 
   it('send transaction redirects correctly', async () => {
-    const walletProvider = new WalletProvider("http://mocked-wallet.com", new TestTransactionFactory());
+    const walletProvider = new WalletProvider("http://mocked-wallet.com");
     const mockTransaction = new TestTransaction({
       receiver: "erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu",
       value: "0",
@@ -65,7 +65,7 @@ describe("test wallet provider", () => {
   });
 
   it('sign transaction redirects correctly', async () => {
-    const walletProvider = new WalletProvider("http://mocked-wallet.com", new TestTransactionFactory());
+    const walletProvider = new WalletProvider("http://mocked-wallet.com");
     const mockTransaction = new TestTransaction({
       receiver: "erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu",
       value: "0",
@@ -81,7 +81,7 @@ describe("test wallet provider", () => {
   });
 
   it('sign multiple transactions redirects correctly', async () => {
-    const walletProvider = new WalletProvider("http://mocked-wallet.com", new TestTransactionFactory());
+    const walletProvider = new WalletProvider("http://mocked-wallet.com");
     const mockTransactions = [
       new TestTransaction({
         receiver: "erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu",
@@ -140,11 +140,5 @@ class TestTransaction implements ITransaction {
         version: this.version,
         options: this.options ? this.options : undefined
     };
-  }
-}
-
-class TestTransactionFactory implements ITransactionFactory {
-  fromPlainObject(obj: any): ISignedTransaction {
-    return new TestTransaction(obj);
   }
 }

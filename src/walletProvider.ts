@@ -1,5 +1,5 @@
 import qs from "qs";
-import { ISignedTransaction, ITransaction, ITransactionFactory } from "./interface";
+import { ITransaction } from "./interface";
 import {
     WALLET_PROVIDER_CALLBACK_PARAM,
     WALLET_PROVIDER_CALLBACK_PARAM_TX_SIGNED,
@@ -8,7 +8,8 @@ import {
     WALLET_PROVIDER_SEND_TRANSACTION_URL,
     WALLET_PROVIDER_SIGN_TRANSACTION_URL,
 } from "./constants";
-import { ErrInvalidTxSignReturnValue, ErrNotImplemented } from "./errors";
+import { ErrInvalidTxSignReturnValue } from "./errors";
+import { PlainSignedTransaction } from "./plainSignedTransaction";
 
 interface TransactionMessage {
     receiver: string;
@@ -22,15 +23,13 @@ interface TransactionMessage {
 
 export class WalletProvider {
     private readonly walletUrl: string;
-    private readonly transactionFactory: ITransactionFactory;
 
     /**
      * Creates a new WalletProvider
      * @param walletURL
      */
-    constructor(walletURL: string, transactionFactory: ITransactionFactory) {
+    constructor(walletURL: string) {
         this.walletUrl = walletURL;
-        this.transactionFactory = transactionFactory;
     }
 
     /**
@@ -48,7 +47,7 @@ export class WalletProvider {
         }
 
         const redirect = `${this.baseWalletUrl()}${WALLET_PROVIDER_CONNECT_URL}?${callbackUrl}${token}`;
-        // TODO: Perhaps do not delay, just like for signTransactions()?
+        // QUESTION FOR REVIEW: perhaps only return the redirect URL, and let the client do "window.location.href = redirect"?
         await new Promise((resolve) => {
             setTimeout(() => {
               window.location.href = redirect;
@@ -56,7 +55,6 @@ export class WalletProvider {
             }, 10);
           });
 
-        // TODO: Perhaps do not return anything?
         return window.location.href;
     }
 
@@ -70,7 +68,7 @@ export class WalletProvider {
         }
 
         const redirect = `${this.baseWalletUrl()}${WALLET_PROVIDER_DISCONNECT_URL}?${callbackUrl}`;
-        // TODO: Perhaps do not delay, just like for signTransactions()?
+        // QUESTION FOR REVIEW: perhaps only return the redirect URL, and let the client do "window.location.href = redirect"?
         await new Promise((resolve) => {
             setTimeout(() => {
               window.location.href = redirect;
@@ -78,7 +76,6 @@ export class WalletProvider {
             }, 10);
           });
 
-        // TODO: Perhaps do not return anything?
         return true;
     }
 
@@ -119,7 +116,7 @@ export class WalletProvider {
     }
 
     /**
-     * TODO: Perhaps only keep the plural version?
+     * QUESTION FOR REVIEW: Perhaps only keep the plural version?
      * Packs a {@link Transaction} and fetches correct redirect URL from the wallet API. Then redirects
      *   the client to the sign transaction hook
      * @param transaction
@@ -132,7 +129,7 @@ export class WalletProvider {
         window.location.href = `${url}&callbackUrl=${options !== undefined && options.callbackUrl !== undefined ? options.callbackUrl : window.location.href}`;
     }
 
-    getTransactionsFromWalletUrl(): ISignedTransaction[] {
+    getTransactionsFromWalletUrl(): PlainSignedTransaction[] {
         const urlParams = qs.parse(window.location.search.slice(1));
         if (!WalletProvider.isTxSignReturnSuccess(urlParams)) {
             return [];
@@ -145,7 +142,7 @@ export class WalletProvider {
         return urlParams.hasOwnProperty(WALLET_PROVIDER_CALLBACK_PARAM) && urlParams[WALLET_PROVIDER_CALLBACK_PARAM] === WALLET_PROVIDER_CALLBACK_PARAM_TX_SIGNED;
     }
 
-    private getTxSignReturnValue(urlParams: any): ISignedTransaction[] {
+    private getTxSignReturnValue(urlParams: any): PlainSignedTransaction[] {
         // "options" property is optional (it isn't always received from the Web Wallet)
         const expectedProps = ["nonce", "value", "receiver", "sender", "gasPrice",
             "gasLimit", "data", "chainID", "version", "signature"];
@@ -163,10 +160,10 @@ export class WalletProvider {
             }
         }
 
-        const transactions: ISignedTransaction[] = [];
+        const transactions: PlainSignedTransaction[] = [];
         
         for (let i = 0; i < expectedLength; i++) {
-            let plainObject = {
+            let plainSignedTransaction = new PlainSignedTransaction({
                 nonce: parseInt(urlParams["nonce"][i]),
                 value: urlParams["value"][i],
                 receiver: urlParams["receiver"][i],
@@ -181,10 +178,9 @@ export class WalletProvider {
                     options: parseInt(urlParams["options"][i])
                 } : {}),
                 signature: urlParams["signature"][i]
-            };
+            });
 
-            let transaction = this.transactionFactory.fromPlainObject(plainObject);
-            transactions.push(transaction);
+            transactions.push(plainSignedTransaction);
         }
 
         return transactions;

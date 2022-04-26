@@ -11,15 +11,6 @@
 }
 
 /**
- * Signals that a method is not yet implemented
- */
-export class ErrNotImplemented extends Err {
-    public constructor() {
-        super("Method not yet implemented");
-    }
-}
-
-/**
  * Signals that the data inside the url is not a valid one for a transaction sign response
  */
  export class ErrInvalidTxSignReturnValue extends Err {
