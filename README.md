@@ -1,6 +1,8 @@
 # Elrond SDK for JavaScript: Elrond (Web) Wallet provider
 
-Signing provider for dApps: Elrond (Web) Wallet. 
+Signing provider for dApps: Elrond (Web) Wallet.
+
+An integration sample can be found [here](examples/app.js). However, for all purposes, **we recommend using [dapp-core](https://github.com/ElrondNetwork/dapp-core)** instead of integrating the signing provider on your own.
 
 ## Distribution
 
