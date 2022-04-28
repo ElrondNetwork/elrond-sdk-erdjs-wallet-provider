@@ -80,19 +80,6 @@ export class WalletProvider {
     }
 
     /**
-     * Packs a {@link Transaction} and fetches correct redirect URL from the wallet API. Then redirects
-     *   the client to the send transaction hook
-     * @param transaction
-     * @param options
-     */
-    async sendTransaction(transaction: ITransaction, options?: { callbackUrl?: string }): Promise<void> {
-        let plainTransaction = WalletProvider.prepareWalletTransaction(transaction);
-        let url = `${this.baseWalletUrl()}${WALLET_PROVIDER_SEND_TRANSACTION_URL}?${this.buildTransactionUrl(plainTransaction)}`;
-
-        window.location.href = `${url}&callbackUrl=${options !== undefined && options.callbackUrl !== undefined ? options.callbackUrl : window.location.href}`;
-    }
-
-    /**
      * Packs an array of {$link Transaction} and redirects to the correct transaction sigining hook
      *
      * @param transactions
@@ -116,17 +103,13 @@ export class WalletProvider {
     }
 
     /**
-     * QUESTION FOR REVIEW: Perhaps only keep the plural version?
      * Packs a {@link Transaction} and fetches correct redirect URL from the wallet API. Then redirects
      *   the client to the sign transaction hook
      * @param transaction
      * @param options
      */
     async signTransaction(transaction: ITransaction, options?: { callbackUrl?: string }): Promise<void> {
-        let plainTransaction = WalletProvider.prepareWalletTransaction(transaction);
-        let url = `${this.baseWalletUrl()}${WALLET_PROVIDER_SIGN_TRANSACTION_URL}?${this.buildTransactionUrl(plainTransaction)}`;
-
-        window.location.href = `${url}&callbackUrl=${options !== undefined && options.callbackUrl !== undefined ? options.callbackUrl : window.location.href}`;
+        await this.signTransactions([transaction], options);
     }
 
     getTransactionsFromWalletUrl(): PlainSignedTransaction[] {
