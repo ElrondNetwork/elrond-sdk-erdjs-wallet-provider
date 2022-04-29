@@ -166,10 +166,10 @@ export class WalletProvider {
     }
 
     private buildWalletUrl(options: { endpoint: string, callbackUrl?: string, params?: any }): string {
-        const params = options.params || {};
-        params.callbackUrl = options?.callbackUrl || window.location.href;
-        const qsString = qs.stringify(options.params);
-        const url = `${this.baseWalletUrl()}/${options.endpoint}?${qsString}`;
+        const callbackUrl = options?.callbackUrl || window.location.href;
+        const partialQueryString = qs.stringify(options.params || {});
+        const fullQueryString = partialQueryString ? `${partialQueryString}&callbackUrl=${callbackUrl}` : `callbackUrl=${callbackUrl}`;
+        const url = `${this.baseWalletUrl()}/${options.endpoint}?${fullQueryString}`;
         return url;
     }
 
