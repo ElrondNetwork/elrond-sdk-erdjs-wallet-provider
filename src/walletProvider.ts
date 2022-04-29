@@ -25,37 +25,37 @@ export class WalletProvider {
      * Fetches the login hook url and redirects the client to the wallet login.
      */
     async login(options?: { callbackUrl?: string; token?: string }): Promise<string> {
-        let callbackUrl = options?.callbackUrl || window.location.href;
-        let redirectUrl = `${this.baseWalletUrl()}${WALLET_PROVIDER_CONNECT_URL}?callbackUrl=${callbackUrl}`;
+        const redirectUrl = this.buildWalletUrl({
+            endpoint: WALLET_PROVIDER_CONNECT_URL,
+            callbackUrl: options?.callbackUrl,
+            params: {
+                token: options?.token
+            }
+        });
+        
+        await this.redirectLater(redirectUrl);
+        return redirectUrl;
+    }
 
-        if (options?.token) {
-            redirectUrl = `${redirectUrl}&token=${options.token}`
-        }
-
+    private async redirectLater(url: string, delayMilliseconds: number = 10) {
         await new Promise((resolve) => {
             setTimeout(() => {
-                window.location.href = redirectUrl;
+                window.location.href = url;
                 resolve(true);
-            }, 10);
+            }, delayMilliseconds);
         });
-
-        return redirectUrl;
     }
 
     /**
     * Fetches the logout hook url and redirects the client to the wallet logout.
     */
     async logout(options?: { callbackUrl?: string }): Promise<boolean> {
-        let callbackUrl = options?.callbackUrl || window.location.href;
-        const redirectUrl = `${this.baseWalletUrl()}${WALLET_PROVIDER_DISCONNECT_URL}?callbackUrl=${callbackUrl}`;
-
-        await new Promise((resolve) => {
-            setTimeout(() => {
-                window.location.href = redirectUrl;
-                resolve(true);
-            }, 10);
+        const redirectUrl = this.buildWalletUrl({
+            endpoint: WALLET_PROVIDER_DISCONNECT_URL,
+            callbackUrl: options?.callbackUrl
         });
 
+        await this.redirectLater(redirectUrl);
         return true;
     }
 
@@ -78,8 +78,12 @@ export class WalletProvider {
             }
         });
 
-        let callbackUrl = options?.callbackUrl || window.location.href;
-        let redirectUrl = `${this.baseWalletUrl()}${WALLET_PROVIDER_SIGN_TRANSACTION_URL}?${qs.stringify(jsonToSend)}&callbackUrl=${callbackUrl}`;
+        const redirectUrl = this.buildWalletUrl({
+            endpoint: WALLET_PROVIDER_SIGN_TRANSACTION_URL,
+            callbackUrl: options?.callbackUrl,
+            params: jsonToSend
+        });
+
         window.location.href = redirectUrl;
     }
 
@@ -159,6 +163,14 @@ export class WalletProvider {
         }
 
         return plainTransaction;
+    }
+
+    private buildWalletUrl(options: { endpoint: string, callbackUrl?: string, params?: any }): string {
+        const params = options.params || {};
+        params.callbackUrl = options?.callbackUrl || window.location.href;
+        const qsString = qs.stringify(options.params);
+        const url = `${this.baseWalletUrl()}/${options.endpoint}?${qsString}`;
+        return url;
     }
 
     private baseWalletUrl(): string {
