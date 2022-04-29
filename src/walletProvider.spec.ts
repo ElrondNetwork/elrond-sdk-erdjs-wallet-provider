@@ -29,13 +29,13 @@ describe("test wallet provider", () => {
     const walletProvider = new WalletProvider("http://mocked-wallet.com");
 
     const returnUrl = await walletProvider.login();
-    assert.equal(returnUrl, "http://mocked-wallet.com/hook/login?callbackUrl=http://return-to-wallet");
+    assert.equal(decodeURI(returnUrl), "http://mocked-wallet.com/hook/login?callbackUrl=http://return-to-wallet");
 
     const returnUrlWithCallback = await walletProvider.login({callbackUrl: "http://another-callback"});
     assert.equal(returnUrlWithCallback, "http://mocked-wallet.com/hook/login?callbackUrl=http://another-callback");
 
     const returnUrlWithToken = await walletProvider.login({callbackUrl: "http://another-callback", token: "test-token"});
-    assert.equal(returnUrlWithToken, "http://mocked-wallet.com/hook/login?callbackUrl=http://another-callback&token=test-token");
+    assert.equal(returnUrlWithToken, "http://mocked-wallet.com/hook/login?token=test-token&callbackUrl=http://another-callback");
   });
 
   it('logout redirects correctly', async () => {
