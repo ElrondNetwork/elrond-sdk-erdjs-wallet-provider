@@ -8,7 +8,7 @@ export async function login() {
 }
 
 function createProvider() {
-    return new WalletProvider(WALLET_PROVIDER_TESTNET, new TestTransactionFactory());
+    return new WalletProvider(WALLET_PROVIDER_TESTNET);
 }
 
 export async function showAddress() {
@@ -60,17 +60,19 @@ export async function signTransactions() {
     await provider.signTransactions([firstTransaction, secondTransaction]);
 }
 
+/**
+ * In production, if needed, one can use erdjs' `Transaction.fromPlainObject()` to wrap the plain transaction objects returned by the provider. 
+ * 
+ * For example: 
+ *
+ * ```
+ * let plainSignedTransactions = provider.getTransactionsFromWalletUrl();
+ * let transactions = plainSignedTransactions.map(item => Transaction.fromPlainObject(item));
+ * ```
+ */
 export async function showSignedTransactions() {
     let provider = createProvider();
-    let transactions = provider.getTransactionsFromWalletUrl();
-    alert(JSON.stringify(transactions, null, 4));
-}
+    let plainSignedTransactions = provider.getTransactionsFromWalletUrl();
 
-class TestTransactionFactory {
-    fromPlainObject(obj) {
-        console.log("transactionFactory.fromPlainObject()");
-        console.log(obj);
-        // In production, if using erdjs, a Transaction object could be created & returned.
-        return obj;
-    }
+    alert(JSON.stringify(plainSignedTransactions, null, 4));
 }
