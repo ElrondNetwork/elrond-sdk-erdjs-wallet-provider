@@ -24,7 +24,7 @@ export class WalletProvider {
     /**
      * Fetches the login hook url and redirects the client to the wallet login.
      */
-    async login(options?: { callbackUrl?: string; token?: string, delayMilliseconds?: number }): Promise<string> {
+    async login(options?: { callbackUrl?: string; token?: string, redirectDelayMilliseconds?: number }): Promise<string> {
         const redirectUrl = this.buildWalletUrl({
             endpoint: WALLET_PROVIDER_CONNECT_URL,
             callbackUrl: options?.callbackUrl,
@@ -33,7 +33,7 @@ export class WalletProvider {
             }
         });
         
-        await this.redirect(redirectUrl, options?.delayMilliseconds);
+        await this.redirect(redirectUrl, options?.redirectDelayMilliseconds);
         return redirectUrl;
     }
 
@@ -61,13 +61,13 @@ export class WalletProvider {
     /**
     * Fetches the logout hook url and redirects the client to the wallet logout.
     */
-    async logout(options?: { callbackUrl?: string, delayMilliseconds?: number }): Promise<boolean> {
+    async logout(options?: { callbackUrl?: string, redirectDelayMilliseconds?: number }): Promise<boolean> {
         const redirectUrl = this.buildWalletUrl({
             endpoint: WALLET_PROVIDER_DISCONNECT_URL,
             callbackUrl: options?.callbackUrl
         });
 
-        await this.redirect(redirectUrl, options?.delayMilliseconds);
+        await this.redirect(redirectUrl, options?.redirectDelayMilliseconds);
         return true;
     }
 
