@@ -79,5 +79,5 @@ export async function showSignedTransactions() {
 
 export async function logout() {
     let provider = createProvider();
-    await provider.logout();
+    await provider.logout({ callbackUrl: window.location.href, redirectDelayMilliseconds: 10 });
 }
