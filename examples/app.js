@@ -1,6 +1,5 @@
 import qs from "qs";
-import { WalletProvider } from "../out/walletProvider";
-import { WALLET_PROVIDER_TESTNET } from "../out/constants";
+import { WalletProvider, WALLET_PROVIDER_TESTNET } from "../src";
 
 export async function login() {
     let provider = createProvider();
