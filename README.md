@@ -2,7 +2,7 @@
 
 Signing provider for dApps: Elrond (Web) Wallet.
 
-An integration sample can be found [here](examples/app.js). However, for all purposes, **we recommend using [dapp-core](https://github.com/ElrondNetwork/dapp-core)** instead of integrating the signing provider on your own.
+An integration sample can be found further down. However, for all purposes, **we recommend using [dapp-core](https://github.com/ElrondNetwork/dapp-core)** instead of integrating the signing provider on your own.
 
 ## Distribution
 
@@ -23,22 +23,80 @@ npm install
 npm run compile
 ```
 
-### Running the examples
+### Usage Examples
 
-Make sure you have the package `http-server` installed globally.
-
+####Login
 ```
-npm install --global http-server
-```
-
-When you are ready, build the examples:
-
-```
-npm run compile-examples
+export async function login() {
+let provider = createProvider();
+await provider.login();
+}
 ```
 
-Start the server and navigate to `http://localhost:8080/examples/index.html`
+####Sign Transactions
+```
+export async function signTransactions() {
+let provider = createProvider();
+
+    let firstTransaction = {
+        toPlainObject: function () {
+            return {
+                nonce: 42,
+                value: "1",
+                receiver: "erd1uv40ahysflse896x4ktnh6ecx43u7cmy9wnxnvcyp7deg299a4sq6vaywa",
+                gasPrice: 1000000000,
+                gasLimit: 70000,
+                data: Buffer.from("hello").toString("base64"),
+                chainID: "T",
+                version: 1
+            };
+        }
+    };
+
+    let secondTransaction = {
+        toPlainObject: function () {
+            return {
+                nonce: 43,
+                value: "1",
+                receiver: "erd1uv40ahysflse896x4ktnh6ecx43u7cmy9wnxnvcyp7deg299a4sq6vaywa",
+                gasPrice: 1000000000,
+                gasLimit: 70000,
+                data: Buffer.from("world").toString("base64"),
+                chainID: "T",
+                version: 1
+            };
+        }
+    };
+
+    await provider.signTransactions([firstTransaction, secondTransaction]);
+}
+```
+
+
+In production, if needed, one can use erdjs' `Transaction.fromPlainObject()` to wrap the plain transaction objects returned by the provider.
+
+For example:
 
 ```
-http-server --port=8080
+let plainSignedTransactions = provider.getTransactionsFromWalletUrl();
+let transactions = plainSignedTransactions.map(item => Transaction.fromPlainObject(item));
+```
+
+
+#### Show signed messages
+```
+export async function showSignedTransactions() {
+    let provider = createProvider();
+    let plainSignedTransactions = provider.getTransactionsFromWalletUrl();
+    alert(JSON.stringify(plainSignedTransactions, null, 4));
+}
+```
+
+#### Logout
+```
+export async function logout() {
+    let provider = createProvider();
+    await provider.logout({ callbackUrl: window.location.href, redirectDelayMilliseconds: 10 });
+}
+
 ```
