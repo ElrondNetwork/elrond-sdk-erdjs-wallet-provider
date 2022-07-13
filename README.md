@@ -2,7 +2,9 @@
 
 Signing provider for dApps: Elrond (Web) Wallet.
 
-An integration sample can be found further down. However, for all purposes, **we recommend using [dapp-core](https://github.com/ElrondNetwork/dapp-core)** instead of integrating the signing provider on your own.
+Documentation is available on [docs.elrond.com](https://docs.elrond.com/sdk-and-tools/erdjs/erdjs-signing-providers/), while an integration example can be found [here](https://github.com/ElrondNetwork/elrond-sdk-erdjs-examples/tree/main/signing-providers).
+
+Note that **we recommend using [dapp-core](https://github.com/ElrondNetwork/dapp-core)** instead of integrating the signing provider on your own.
 
 ## Distribution
 
