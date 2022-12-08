@@ -16,7 +16,7 @@
   "author": "ElrondNetwork",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "qs": "6.10.1"
+    "qs": "6.10.3"
   },
   "devDependencies": {
     "@types/chai": "4.2.11",
