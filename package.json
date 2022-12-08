@@ -1,6 +1,6 @@
 {
   "name": "@elrondnetwork/erdjs-web-wallet-provider",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Signing provider for dApps: Elrond (Web) Wallet",
   "main": "out/index.js",
   "types": "out/index.d.js",
