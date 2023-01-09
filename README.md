@@ -1,19 +1,19 @@
-# Elrond SDK for JavaScript: Elrond (Web) Wallet provider
+# mx-sdk-erdjs-web-wallet-provider
 
-Signing provider for dApps: Elrond (Web) Wallet.
+Signing provider for dApps: MultiversX (Web) Wallet.
 
-Documentation is available on [docs.elrond.com](https://docs.elrond.com/sdk-and-tools/erdjs/erdjs-signing-providers/), while an integration example can be found [here](https://github.com/ElrondNetwork/elrond-sdk-erdjs-examples/tree/main/signing-providers).
+Documentation is available on [docs.multiversx.com](https://docs.multiversx.com/sdk-and-tools/erdjs/erdjs-signing-providers/), while an integration example can be found [here](https://github.com/multiversx/mx-sdk-erdjs-examples/tree/main/signing-providers).
 
-Note that **we recommend using [dapp-core](https://github.com/ElrondNetwork/dapp-core)** instead of integrating the signing provider on your own.
+Note that **we recommend using [dapp-core](https://github.com/multiversx/mx-sdk-dapp)** instead of integrating the signing provider on your own.
 
 ## Distribution
 
-[npm](https://www.npmjs.com/package/@elrondnetwork/erdjs-web-wallet-provider)
+[npm](https://www.npmjs.com/package/@multiversx/erdjs-web-wallet-provider)
 
 ## Installation
 
 ```
-npm install @elrondnetwork/erdjs-web-wallet-provider
+npm install @multiversx/erdjs-web-wallet-provider
 ```
 
 ### Building the library
