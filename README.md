@@ -1,19 +1,19 @@
-# mx-sdk-erdjs-web-wallet-provider
+# mx-sdk-js-web-wallet-provider
 
 Signing provider for dApps: MultiversX (Web) Wallet.
 
-Documentation is available on [docs.multiversx.com](https://docs.multiversx.com/sdk-and-tools/erdjs/erdjs-signing-providers/), while an integration example can be found [here](https://github.com/multiversx/mx-sdk-erdjs-examples/tree/main/signing-providers).
+Documentation is available on [docs.multiversx.com](https://docs.multiversx.com/sdk-and-tools/erdjs/erdjs-signing-providers/), while an integration example can be found [here](https://github.com/multiversx/mx-sdk-js-examples/tree/main/signing-providers).
 
 Note that **we recommend using [dapp-core](https://github.com/multiversx/mx-sdk-dapp)** instead of integrating the signing provider on your own.
 
 ## Distribution
 
-[npm](https://www.npmjs.com/package/@multiversx/erdjs-web-wallet-provider)
+[npm](https://www.npmjs.com/package/@multiversx/sdk-web-wallet-provider)
 
 ## Installation
 
 ```
-npm install @multiversx/erdjs-web-wallet-provider
+npm install @multiversx/sdk-web-wallet-provider
 ```
 
 ### Building the library
@@ -75,7 +75,7 @@ let provider = createProvider();
 ```
 
 
-In production, if needed, one can use erdjs' `Transaction.fromPlainObject()` to wrap the plain transaction objects returned by the provider.
+In production, if needed, one can use sdk-core' `Transaction.fromPlainObject()` to wrap the plain transaction objects returned by the provider.
 
 For example:
 
