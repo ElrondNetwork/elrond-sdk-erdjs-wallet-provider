@@ -1,3 +1,7 @@
 export interface ITransaction {
-    toPlainObject(): any;
+  toPlainObject(): any;
+}
+
+export interface IMessage {
+  toPlainObject(): any;
 }
