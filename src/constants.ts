@@ -6,5 +6,6 @@ export const WALLET_PROVIDER_CONNECT_URL = "hook/login";
 export const WALLET_PROVIDER_DISCONNECT_URL = "hook/logout";
 export const WALLET_PROVIDER_SEND_TRANSACTION_URL = "hook/transaction";
 export const WALLET_PROVIDER_SIGN_TRANSACTION_URL = "hook/sign";
+export const WALLET_PROVIDER_SIGN_MESSAGE_URL = "hook/sign-message";
 export const WALLET_PROVIDER_CALLBACK_PARAM = "walletProviderStatus";
 export const WALLET_PROVIDER_CALLBACK_PARAM_TX_SIGNED = "transactionsSigned";

@@ -1,10 +1,11 @@
 import qs from "qs";
-import { ITransaction } from "./interface";
+import { IMessage, ITransaction } from "./interface";
 import {
     WALLET_PROVIDER_CALLBACK_PARAM,
     WALLET_PROVIDER_CALLBACK_PARAM_TX_SIGNED,
     WALLET_PROVIDER_CONNECT_URL,
     WALLET_PROVIDER_DISCONNECT_URL,
+    WALLET_PROVIDER_SIGN_MESSAGE_URL,
     WALLET_PROVIDER_SIGN_TRANSACTION_URL,
 } from "./constants";
 import { ErrInvalidTxSignReturnValue } from "./errors";
@@ -69,6 +70,26 @@ export class WalletProvider {
 
         await this.redirect(redirectUrl, options?.redirectDelayMilliseconds);
         return true;
+    }
+
+    
+    /**
+     * Packs a {@link SignMessage} and fetches correct redirect URL from the wallet API. Then redirects
+     * the client to the sign message hook
+     * @param message
+     * @param options
+     */
+    async signMessage(message: IMessage, options?: { callbackUrl?: string }): Promise<string> {
+        const redirectUrl = this.buildWalletUrl({
+            endpoint: WALLET_PROVIDER_SIGN_MESSAGE_URL,
+            callbackUrl: options?.callbackUrl,
+            params: {
+                message
+            }
+        });
+        
+        await this.redirect(redirectUrl);
+        return redirectUrl;
     }
 
     /**
