@@ -206,6 +206,9 @@ export class WalletProvider {
         const partialQueryString = qs.stringify(options.params || {});
         const fullQueryString = partialQueryString ? `${partialQueryString}&callbackUrl=${callbackUrl}` : `callbackUrl=${callbackUrl}`;
         const url = `${this.baseWalletUrl()}/${options.endpoint}?${fullQueryString}`;
+
+        console.debug(`Redirecting to URL: ${url}`);
+
         return url;
     }
 
