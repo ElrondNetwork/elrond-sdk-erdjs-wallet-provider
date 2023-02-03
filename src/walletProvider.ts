@@ -33,7 +33,7 @@ export class WalletProvider {
                 token: options?.token
             }
         });
-        
+
         await this.redirect(redirectUrl, options?.redirectDelayMilliseconds);
         return redirectUrl;
     }
@@ -72,7 +72,7 @@ export class WalletProvider {
         return true;
     }
 
-    
+
     /**
      * Packs a {@link SignMessage} and fetches correct redirect URL from the wallet API. Then redirects
      * the client to the sign message hook
@@ -87,7 +87,7 @@ export class WalletProvider {
                 message
             }
         });
-        
+
         await this.redirect(redirectUrl);
         return redirectUrl;
     }
@@ -193,6 +193,9 @@ export class WalletProvider {
         // We adjust the data field, in order to make it compatible with what the web wallet expects.
         if (plainTransaction.data) {
             plainTransaction.data = Buffer.from(plainTransaction.data, "base64").toString();
+        } else {
+            // The web wallet expects the data field to be a string, even if it's empty (early 2023).
+            plainTransaction.data = "";
         }
 
         return plainTransaction;
