@@ -33,7 +33,7 @@ export class WalletProvider {
                 token: options?.token
             }
         });
-        
+
         await this.redirect(redirectUrl, options?.redirectDelayMilliseconds);
         return redirectUrl;
     }
@@ -72,7 +72,7 @@ export class WalletProvider {
         return true;
     }
 
-    
+
     /**
      * Packs a {@link SignMessage} and fetches correct redirect URL from the wallet API. Then redirects
      * the client to the sign message hook
@@ -87,7 +87,7 @@ export class WalletProvider {
                 message
             }
         });
-        
+
         await this.redirect(redirectUrl);
         return redirectUrl;
     }
@@ -144,9 +144,11 @@ export class WalletProvider {
     }
 
     private getTxSignReturnValue(urlParams: any): PlainSignedTransaction[] {
-        // "options" property is optional (it isn't always received from the Web Wallet)
+        console.info(`Received urlParams: ${urlParams}`);
+
+        // "options", "data" properties are optional (it isn't always received from the Web Wallet)
         const expectedProps = ["nonce", "value", "receiver", "sender", "gasPrice",
-            "gasLimit", "data", "chainID", "version", "signature"];
+            "gasLimit", "chainID", "version", "signature"];
 
         for (let txProp of expectedProps) {
             if (!urlParams[txProp] || !Array.isArray(urlParams[txProp])) {
@@ -171,7 +173,8 @@ export class WalletProvider {
                 sender: urlParams["sender"][i],
                 gasPrice: parseInt(urlParams["gasPrice"][i]),
                 gasLimit: parseInt(urlParams["gasLimit"][i]),
-                data: urlParams["data"][i],
+                // Handle the optional "data" property.
+                data: urlParams["data"][i] ?? "",
                 chainID: urlParams["chainID"][i],
                 version: parseInt(urlParams["version"][i]),
                 // Handle the optional "options" property.
@@ -193,6 +196,9 @@ export class WalletProvider {
         // We adjust the data field, in order to make it compatible with what the web wallet expects.
         if (plainTransaction.data) {
             plainTransaction.data = Buffer.from(plainTransaction.data, "base64").toString();
+        } else {
+            // The web wallet expects the data field to be a string, even if it's empty (early 2023).
+            plainTransaction.data = "";
         }
 
         return plainTransaction;
@@ -203,6 +209,9 @@ export class WalletProvider {
         const partialQueryString = qs.stringify(options.params || {});
         const fullQueryString = partialQueryString ? `${partialQueryString}&callbackUrl=${callbackUrl}` : `callbackUrl=${callbackUrl}`;
         const url = `${this.baseWalletUrl()}/${options.endpoint}?${fullQueryString}`;
+
+        console.info(`Redirecting to Wallet URL: ${decodeURI(url)}`);
+
         return url;
     }
 
