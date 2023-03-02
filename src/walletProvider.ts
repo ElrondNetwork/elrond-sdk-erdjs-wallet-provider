@@ -1,14 +1,14 @@
 import qs from "qs";
-import { IMessage, ITransaction } from "./interface";
 import {
     WALLET_PROVIDER_CALLBACK_PARAM,
     WALLET_PROVIDER_CALLBACK_PARAM_TX_SIGNED,
     WALLET_PROVIDER_CONNECT_URL,
     WALLET_PROVIDER_DISCONNECT_URL,
     WALLET_PROVIDER_SIGN_MESSAGE_URL,
-    WALLET_PROVIDER_SIGN_TRANSACTION_URL,
+    WALLET_PROVIDER_SIGN_TRANSACTION_URL
 } from "./constants";
-import { ErrInvalidTxSignReturnValue } from "./errors";
+import { ErrCannotSignMessage, ErrCannotSignTransactions } from "./errors";
+import { ITransaction } from "./interface";
 import { PlainSignedTransaction } from "./plainSignedTransaction";
 
 export class WalletProvider {
@@ -79,7 +79,7 @@ export class WalletProvider {
      * @param message
      * @param options
      */
-    async signMessage(message: IMessage, options?: { callbackUrl?: string }): Promise<string> {
+    async signMessage(message: string, options?: { callbackUrl?: string }): Promise<string> {
         const redirectUrl = this.buildWalletUrl({
             endpoint: WALLET_PROVIDER_SIGN_MESSAGE_URL,
             callbackUrl: options?.callbackUrl,
@@ -90,6 +90,22 @@ export class WalletProvider {
 
         await this.redirect(redirectUrl);
         return redirectUrl;
+    }
+
+    getMessageSignatureFromWalletUrl(): string {
+        const url = window.location.search.slice(1);
+        console.info("getMessageSignatureFromWalletUrl(), url:", url);
+
+        const urlParams = qs.parse(url);
+        const status = urlParams.status?.toString() || "";
+        const expectedStatus = "success";
+
+        if (status !== expectedStatus) {
+            throw new ErrCannotSignMessage();
+        }
+
+        const signature = urlParams.signature?.toString() || "";
+        return signature;
     }
 
     /**
@@ -144,7 +160,7 @@ export class WalletProvider {
     }
 
     private getTxSignReturnValue(urlParams: any): PlainSignedTransaction[] {
-        console.info(`Received urlParams: ${urlParams}`);
+        console.info("getTxSignReturnValue(), urlParams:", urlParams);
 
         // "options", "data" properties are optional (it isn't always received from the Web Wallet)
         const expectedProps = ["nonce", "value", "receiver", "sender", "gasPrice",
@@ -152,14 +168,14 @@ export class WalletProvider {
 
         for (let txProp of expectedProps) {
             if (!urlParams[txProp] || !Array.isArray(urlParams[txProp])) {
-                throw new ErrInvalidTxSignReturnValue();
+                throw new ErrCannotSignTransactions();
             }
         }
 
         const expectedLength = urlParams["nonce"].length;
         for (let txProp of expectedProps) {
             if (urlParams[txProp].length !== expectedLength) {
-                throw new ErrInvalidTxSignReturnValue();
+                throw new ErrCannotSignTransactions();
             }
         }
 
