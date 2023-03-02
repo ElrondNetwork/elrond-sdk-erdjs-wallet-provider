@@ -8,7 +8,7 @@ import {
     WALLET_PROVIDER_SIGN_TRANSACTION_URL
 } from "./constants";
 import { ErrCannotGetSignedTransactions, ErrCannotSignedMessage } from "./errors";
-import { ITransaction } from "./interface";
+import { ISignableMessage, ITransaction } from "./interface";
 import { PlainSignedTransaction } from "./plainSignedTransaction";
 
 export class WalletProvider {
@@ -79,12 +79,12 @@ export class WalletProvider {
      * @param message
      * @param options
      */
-    async signMessage(message: string, options?: { callbackUrl?: string }): Promise<string> {
+    async signMessage(message: ISignableMessage, options?: { callbackUrl?: string }): Promise<string> {
         const redirectUrl = this.buildWalletUrl({
             endpoint: WALLET_PROVIDER_SIGN_MESSAGE_URL,
             callbackUrl: options?.callbackUrl,
             params: {
-                message
+                message: message.message.toString()
             }
         });
 
