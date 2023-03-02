@@ -7,7 +7,7 @@ import {
     WALLET_PROVIDER_SIGN_MESSAGE_URL,
     WALLET_PROVIDER_SIGN_TRANSACTION_URL
 } from "./constants";
-import { ErrCannotSignMessage, ErrCannotSignTransactions } from "./errors";
+import { ErrCannotGetSignedTransactions, ErrCannotSignedMessage } from "./errors";
 import { ITransaction } from "./interface";
 import { PlainSignedTransaction } from "./plainSignedTransaction";
 
@@ -98,10 +98,10 @@ export class WalletProvider {
 
         const urlParams = qs.parse(url);
         const status = urlParams.status?.toString() || "";
-        const expectedStatus = "success";
+        const expectedStatus = "signed";
 
         if (status !== expectedStatus) {
-            throw new ErrCannotSignMessage();
+            throw new ErrCannotSignedMessage();
         }
 
         const signature = urlParams.signature?.toString() || "";
@@ -168,14 +168,14 @@ export class WalletProvider {
 
         for (let txProp of expectedProps) {
             if (!urlParams[txProp] || !Array.isArray(urlParams[txProp])) {
-                throw new ErrCannotSignTransactions();
+                throw new ErrCannotGetSignedTransactions();
             }
         }
 
         const expectedLength = urlParams["nonce"].length;
         for (let txProp of expectedProps) {
             if (urlParams[txProp].length !== expectedLength) {
-                throw new ErrCannotSignTransactions();
+                throw new ErrCannotGetSignedTransactions();
             }
         }
 

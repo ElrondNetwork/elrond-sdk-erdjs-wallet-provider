@@ -1,11 +1,11 @@
-export class ErrCannotSignTransactions extends Error {
+export class ErrCannotGetSignedTransactions extends Error {
   public constructor() {
-    super("Cannot sign transaction(s)");
+    super("Cannot get signed transaction(s)");
   }
 }
 
-export class ErrCannotSignMessage extends Error {
+export class ErrCannotSignedMessage extends Error {
   public constructor() {
-    super("Cannot sign message");
+    super("Cannot get signed message");
   }
 }
