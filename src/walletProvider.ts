@@ -193,19 +193,15 @@ export class WalletProvider {
                 data: urlParams["data"][i] ?? "",
                 chainID: urlParams["chainID"][i],
                 version: parseInt(urlParams["version"][i]),
+                ...(urlParams["guardian"] && urlParams["guardian"][i] ? {guardian: urlParams["guardian"][i]} : {}),
+                ...(urlParams["guardianSignature"] && urlParams["guardianSignature"][i] ? {guardianSignature: urlParams["guardianSignature"][i]} : {}),
                 // Handle the optional "options" property.
                 ...(urlParams["options"] && urlParams["options"][i] ? {
                     options: parseInt(urlParams["options"][i])
                 } : {}),
+                
                 signature: urlParams["signature"][i]
             });
-            if(urlParams["guardian"][i]) {
-                plainSignedTransaction.guardian = urlParams["guardian"][i];
-            }
-
-            if(urlParams["guardianSignature"][i]) {
-                plainSignedTransaction.guardianSignature = urlParams["guardianSignature"][i];
-            }
 
             transactions.push(plainSignedTransaction);
         }
