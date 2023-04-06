@@ -162,7 +162,7 @@ export class WalletProvider {
     private getTxSignReturnValue(urlParams: any): PlainSignedTransaction[] {
         console.info("getTxSignReturnValue(), urlParams:", urlParams);
 
-        // "options", "data" properties are optional (it isn't always received from the Web Wallet)
+        // "options", "data", "guardian", "guardianSignature" properties are optional (it isn't always received from the Web Wallet)
         const expectedProps = ["nonce", "value", "receiver", "sender", "gasPrice",
             "gasLimit", "chainID", "version", "signature"];
 
@@ -199,6 +199,13 @@ export class WalletProvider {
                 } : {}),
                 signature: urlParams["signature"][i]
             });
+            if(urlParams["guardian"][i]) {
+                plainSignedTransaction.guardian = urlParams["guardian"][i];
+            }
+
+            if(urlParams["guardianSignature"][i]) {
+                plainSignedTransaction.guardianSignature = urlParams["guardianSignature"][i];
+            }
 
             transactions.push(plainSignedTransaction);
         }
