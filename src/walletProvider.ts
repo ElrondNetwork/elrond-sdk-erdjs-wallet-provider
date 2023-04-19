@@ -5,7 +5,8 @@ import {
     WALLET_PROVIDER_CONNECT_URL,
     WALLET_PROVIDER_DISCONNECT_URL,
     WALLET_PROVIDER_SIGN_MESSAGE_URL,
-    WALLET_PROVIDER_SIGN_TRANSACTION_URL
+    WALLET_PROVIDER_SIGN_TRANSACTION_URL,
+    WALLET_PROVIDER_GUARD_TRANSACTION_URL
 } from "./constants";
 import { ErrCannotGetSignedTransactions, ErrCannotSignedMessage } from "./errors";
 import { ISignableMessage, ITransaction } from "./interface";
@@ -108,32 +109,24 @@ export class WalletProvider {
         return signature;
     }
 
-    /**
+     /**
+     * Packs an array of {$link Transaction} and redirects to the 2fa hook
+     *  
+     * @param transactions
+     * @param options
+     */
+    async guardTransactions(transactions: ITransaction[], options?: { callbackUrl?: string }): Promise<void> {
+        this.redirectTransactionsToEndpoint(WALLET_PROVIDER_GUARD_TRANSACTION_URL, transactions, options);
+    }
+
+     /**
      * Packs an array of {$link Transaction} and redirects to the correct transaction sigining hook
      *  
      * @param transactions
      * @param options
      */
     async signTransactions(transactions: ITransaction[], options?: { callbackUrl?: string }): Promise<void> {
-        const jsonToSend: any = {};
-        transactions.map(tx => {
-            let plainTx = WalletProvider.prepareWalletTransaction(tx);
-            for (let txProp in plainTx) {
-                if (plainTx.hasOwnProperty(txProp) && !jsonToSend.hasOwnProperty(txProp)) {
-                    jsonToSend[txProp] = [];
-                }
-
-                jsonToSend[txProp].push(plainTx[txProp]);
-            }
-        });
-
-        const redirectUrl = this.buildWalletUrl({
-            endpoint: WALLET_PROVIDER_SIGN_TRANSACTION_URL,
-            callbackUrl: options?.callbackUrl,
-            params: jsonToSend
-        });
-
-        window.location.href = redirectUrl;
+        this.redirectTransactionsToEndpoint(WALLET_PROVIDER_SIGN_TRANSACTION_URL, transactions, options);
     }
 
     /**
@@ -236,5 +229,33 @@ export class WalletProvider {
         const protocol = pathArray[0];
         const host = pathArray[2];
         return protocol + '//' + host;
+    }
+
+    /**
+     * Packs an array of {$link Transaction} and redirects to the specified wallet hook
+     *  
+     * @param transactions
+     * @param options
+     */
+    private redirectTransactionsToEndpoint(endpoint:string, transactions: ITransaction[], options?: { callbackUrl?: string }): void {
+        const jsonToSend: any = {};
+        transactions.map(tx => {
+            let plainTx = WalletProvider.prepareWalletTransaction(tx);
+            for (let txProp in plainTx) {
+                if (plainTx.hasOwnProperty(txProp) && !jsonToSend.hasOwnProperty(txProp)) {
+                    jsonToSend[txProp] = [];
+                }
+
+                jsonToSend[txProp].push(plainTx[txProp]);
+            }
+        });
+
+        const redirectUrl = this.buildWalletUrl({
+            endpoint,
+            callbackUrl: options?.callbackUrl,
+            params: jsonToSend
+        });
+
+        window.location.href = redirectUrl;
     }
 }
