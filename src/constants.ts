@@ -1,9 +1,6 @@
-export const WALLET_PROVIDER_MAINNET =
-  "https://wallet.multiversx.com/dapp/init";
-export const WALLET_PROVIDER_DEVNET =
-  "https://devnet-wallet.multiversx.com/dapp/init";
-export const WALLET_PROVIDER_TESTNET =
-  "https://testnet-wallet.multiversx.com/dapp/init";
+export const WALLET_PROVIDER_MAINNET = "https://wallet.multiversx.com/dapp/init";
+export const WALLET_PROVIDER_DEVNET = "https://devnet-wallet.multiversx.com/dapp/init";
+export const WALLET_PROVIDER_TESTNET = "https://testnet-wallet.multiversx.com/dapp/init";
 
 export const WALLET_PROVIDER_CONNECT_URL = "hook/login";
 export const WALLET_PROVIDER_DISCONNECT_URL = "hook/logout";
