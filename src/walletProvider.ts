@@ -116,7 +116,7 @@ export class WalletProvider {
      * @param options
      */
     async guardTransactions(transactions: ITransaction[], options?: { callbackUrl?: string }): Promise<void> {
-        await this.redirectTransactionsToEndpoint(WALLET_PROVIDER_GUARD_TRANSACTION_URL, transactions, options);
+        this.redirectTransactionsToEndpoint(WALLET_PROVIDER_GUARD_TRANSACTION_URL, transactions, options);
     }
 
      /**
@@ -126,7 +126,7 @@ export class WalletProvider {
      * @param options
      */
     async signTransactions(transactions: ITransaction[], options?: { callbackUrl?: string }): Promise<void> {
-        await this.redirectTransactionsToEndpoint(WALLET_PROVIDER_SIGN_TRANSACTION_URL, transactions, options);
+        this.redirectTransactionsToEndpoint(WALLET_PROVIDER_SIGN_TRANSACTION_URL, transactions, options);
     }
 
     /**
