@@ -1,5 +1,5 @@
+import { Address, Transaction, TransactionPayload } from "@multiversx/sdk-core";
 import { assert } from "chai";
-import { ITransaction } from "./interface";
 import { WalletProvider } from "./walletProvider";
 
 declare global {
@@ -50,98 +50,70 @@ describe("test wallet provider", () => {
 
   it('sign transaction redirects correctly (with data field)', async () => {
     const walletProvider = new WalletProvider("http://mocked-wallet.com");
-    const mockTransaction = new TestTransaction({
-      receiver: "erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu",
+    const transaction = new Transaction({
+      sender: Address.fromBech32("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"),
+      receiver: Address.fromBech32("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx"),
       value: "0",
       gasLimit: 50000,
-      data: "hello",
-      gasPrice: 1000000000
+      data: new TransactionPayload("hello"),
+      gasPrice: 1000000000,
+      chainID: "D"
     });
 
-    await walletProvider.signTransaction(mockTransaction);
-    assert.equal(decodeURI(window.location.href), "http://mocked-wallet.com/hook/sign?nonce[0]=0&value[0]=0&receiver[0]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&sender[0]=&gasPrice[0]=1000000000&gasLimit[0]=50000&data[0]=hello&chainID[0]=&version[0]=1&callbackUrl=http://return-to-wallet");
+    await walletProvider.signTransaction(transaction);
+    assert.equal(decodeURI(window.location.href), "http://mocked-wallet.com/hook/sign?nonce[0]=0&value[0]=0&receiver[0]=erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx&sender[0]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th&gasPrice[0]=1000000000&gasLimit[0]=50000&data[0]=hello&chainID[0]=D&version[0]=1&callbackUrl=http://return-to-wallet");
 
-    await walletProvider.signTransaction(mockTransaction, { callbackUrl: "http://another-callback" });
-    assert.equal(decodeURI(window.location.href), "http://mocked-wallet.com/hook/sign?nonce[0]=0&value[0]=0&receiver[0]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&sender[0]=&gasPrice[0]=1000000000&gasLimit[0]=50000&data[0]=hello&chainID[0]=&version[0]=1&callbackUrl=http://another-callback");
+    await walletProvider.signTransaction(transaction, { callbackUrl: "http://another-callback" });
+    assert.equal(decodeURI(window.location.href), "http://mocked-wallet.com/hook/sign?nonce[0]=0&value[0]=0&receiver[0]=erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx&sender[0]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th&gasPrice[0]=1000000000&gasLimit[0]=50000&data[0]=hello&chainID[0]=D&version[0]=1&callbackUrl=http://another-callback");
   });
 
   it('sign transaction redirects correctly (without data field)', async () => {
     const walletProvider = new WalletProvider("http://mocked-wallet.com");
 
-    const mockTransaction = new TestTransaction({
-      receiver: "erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu",
+    const transaction = new Transaction({
+      sender: Address.fromBech32("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"),
+      receiver: Address.fromBech32("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx"),
       value: "0",
       gasLimit: 50000,
-      gasPrice: 1000000000
+      gasPrice: 1000000000,
+      chainID: "D"
     });
 
-    await walletProvider.signTransaction(mockTransaction);
-    assert.equal(decodeURI(window.location.href), "http://mocked-wallet.com/hook/sign?nonce[0]=0&value[0]=0&receiver[0]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&sender[0]=&gasPrice[0]=1000000000&gasLimit[0]=50000&data[0]=&chainID[0]=&version[0]=1&callbackUrl=http://return-to-wallet");
+    await walletProvider.signTransaction(transaction);
+    assert.equal(decodeURI(window.location.href), "http://mocked-wallet.com/hook/sign?nonce[0]=0&value[0]=0&receiver[0]=erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx&sender[0]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th&gasPrice[0]=1000000000&gasLimit[0]=50000&data[0]=&chainID[0]=D&version[0]=1&callbackUrl=http://return-to-wallet");
 
-    await walletProvider.signTransaction(mockTransaction, { callbackUrl: "http://another-callback" });
-    assert.equal(decodeURI(window.location.href), "http://mocked-wallet.com/hook/sign?nonce[0]=0&value[0]=0&receiver[0]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&sender[0]=&gasPrice[0]=1000000000&gasLimit[0]=50000&data[0]=&chainID[0]=&version[0]=1&callbackUrl=http://another-callback");
+    await walletProvider.signTransaction(transaction, { callbackUrl: "http://another-callback" });
+    assert.equal(decodeURI(window.location.href), "http://mocked-wallet.com/hook/sign?nonce[0]=0&value[0]=0&receiver[0]=erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx&sender[0]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th&gasPrice[0]=1000000000&gasLimit[0]=50000&data[0]=&chainID[0]=D&version[0]=1&callbackUrl=http://another-callback");
   });
 
 
   it('sign multiple transactions redirects correctly', async () => {
     const walletProvider = new WalletProvider("http://mocked-wallet.com");
-    const mockTransactions = [
-      new TestTransaction({
-        receiver: "erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu",
-        sender: "erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu",
+    const transactions = [
+      new Transaction({
+        sender: Address.fromBech32("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"),
+        receiver: Address.fromBech32("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx"),
         value: "0",
         gasLimit: 50000,
         gasPrice: 1000000000,
-        chainID: "T"
+        chainID: "T",
+        nonce: 42
       }),
-      new TestTransaction({
-        receiver: "erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu",
-        sender: "erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu",
+      new Transaction({
+        sender: Address.fromBech32("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"),
+        receiver: Address.fromBech32("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx"),
         value: "0",
         gasLimit: 50000,
         gasPrice: 1000000000,
-        chainID: "T"
+        chainID: "T",
+        nonce: 43
       }),
     ];
 
-    await walletProvider.signTransactions(mockTransactions);
-    assert.equal(decodeURI(window.location.href), `http://mocked-wallet.com/hook/sign?nonce[0]=0&nonce[1]=0&value[0]=0&value[1]=0&receiver[0]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&receiver[1]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&sender[0]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&sender[1]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&gasPrice[0]=1000000000&gasPrice[1]=1000000000&gasLimit[0]=50000&gasLimit[1]=50000&data[0]=&data[1]=&chainID[0]=T&chainID[1]=T&version[0]=1&version[1]=1&callbackUrl=http://return-to-wallet`);
+    await walletProvider.signTransactions(transactions);
+    assert.equal(decodeURI(window.location.href), `http://mocked-wallet.com/hook/sign?nonce[0]=42&nonce[1]=43&value[0]=0&value[1]=0&receiver[0]=erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx&receiver[1]=erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx&sender[0]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th&sender[1]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th&gasPrice[0]=1000000000&gasPrice[1]=1000000000&gasLimit[0]=50000&gasLimit[1]=50000&data[0]=&data[1]=&chainID[0]=T&chainID[1]=T&version[0]=1&version[1]=1&callbackUrl=http://return-to-wallet`);
 
-    await walletProvider.signTransactions(mockTransactions, { callbackUrl: "http://another-callback" });
-    assert.equal(decodeURI(window.location.href), `http://mocked-wallet.com/hook/sign?nonce[0]=0&nonce[1]=0&value[0]=0&value[1]=0&receiver[0]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&receiver[1]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&sender[0]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&sender[1]=erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu&gasPrice[0]=1000000000&gasPrice[1]=1000000000&gasLimit[0]=50000&gasLimit[1]=50000&data[0]=&data[1]=&chainID[0]=T&chainID[1]=T&version[0]=1&version[1]=1&callbackUrl=http://another-callback`);
+    await walletProvider.signTransactions(transactions, { callbackUrl: "http://another-callback" });
+    assert.equal(decodeURI(window.location.href), `http://mocked-wallet.com/hook/sign?nonce[0]=42&nonce[1]=43&value[0]=0&value[1]=0&receiver[0]=erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx&receiver[1]=erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx&sender[0]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th&sender[1]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th&gasPrice[0]=1000000000&gasPrice[1]=1000000000&gasLimit[0]=50000&gasLimit[1]=50000&data[0]=&data[1]=&chainID[0]=T&chainID[1]=T&version[0]=1&version[1]=1&callbackUrl=http://another-callback`);
   });
 });
-
-class TestTransaction implements ITransaction {
-  nonce: number = 0;
-  value: string = "";
-  receiver: string = "";
-  gasPrice: number = 0;
-  gasLimit: number = 0;
-  data: string = "";
-  chainID: string = "";
-  version: number = 1;
-  options: number = 0;
-
-  sender: string = "";
-  signature: string = "";
-
-  constructor(init?: Partial<TestTransaction>) {
-    Object.assign(this, init);
-  }
-
-  toPlainObject(): any {
-    return {
-      nonce: this.nonce,
-      value: this.value,
-      receiver: this.receiver,
-      sender: this.sender,
-      gasPrice: this.gasPrice,
-      gasLimit: this.gasLimit,
-      data: this.data ? Buffer.from(this.data).toString("base64") : undefined,
-      chainID: this.chainID,
-      version: this.version,
-      options: this.options ? this.options : undefined
-    };
-  }
-}
