@@ -135,22 +135,25 @@ describe("test getTransactionsFromWalletUrl", () => {
     const walletProvider = new WalletProvider("http://mocked-wallet.com");
     const signedTransactions = walletProvider.getTransactionsFromWalletUrl();
 
-    assert.notStrictEqual(signedTransactions, [
-      {
-        chainID: "D",
-        data: "wrapEgld",
-        gasLimit: 4200000,
-        gasPrice: 1000000000,
-        nonce: 127,
-        receiver:
-          "erd1qqqqqqqqqqqqqpgq7ykazrzd905zvnlr88dpfw06677lxe9w0n4suz00uh",
-        sender:
-          "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",
-        signature:
-          "414dcd2541ecdc1a41cafdd1ef4aff2ba7248402854478ee13c5a21968bd8dd4ab884335ea35c1404f85b0305f11df21615fecc9062e4668e74e8bb6a1e96c0d",
-        value: "100000000000000000",
-        version: 1,
-      } as any,
-    ]);
+    assert.equal(
+      JSON.stringify(signedTransactions),
+      JSON.stringify([
+        {
+          nonce: 127,
+          value: "100000000000000000",
+          receiver:
+            "erd1qqqqqqqqqqqqqpgq7ykazrzd905zvnlr88dpfw06677lxe9w0n4suz00uh",
+          sender:
+            "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",
+          gasPrice: 1000000000,
+          gasLimit: 4200000,
+          data: "wrapEgld",
+          chainID: "D",
+          version: 1,
+          signature:
+            "414dcd2541ecdc1a41cafdd1ef4aff2ba7248402854478ee13c5a21968bd8dd4ab884335ea35c1404f85b0305f11df21615fecc9062e4668e74e8bb6a1e96c0d",
+        },
+      ])
+    );
   });
 });
