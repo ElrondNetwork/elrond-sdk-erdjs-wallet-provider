@@ -8,10 +8,12 @@ export class PlainSignedTransaction {
   data: string = "";
   chainID: string = "";
   version: number = 0;
-  options?: number = undefined;
+  options?: number;
   signature: string = "";
   guardian?: string;
   guardianSignature?: string;
+  senderUsername?: string;
+  receiverUsername?: string;
 
   constructor(init?: Partial<PlainSignedTransaction>) {
     Object.assign(this, init);
