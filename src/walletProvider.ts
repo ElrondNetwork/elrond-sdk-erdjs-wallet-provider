@@ -172,6 +172,8 @@ export class WalletProvider {
 
         const transactions: PlainSignedTransaction[] = [];
 
+
+
         for (let i = 0; i < expectedLength; i++) {
             let plainSignedTransaction = new PlainSignedTransaction({
                 nonce: parseInt(urlParams["nonce"][i]),
@@ -181,7 +183,7 @@ export class WalletProvider {
                 gasPrice: parseInt(urlParams["gasPrice"][i]),
                 gasLimit: parseInt(urlParams["gasLimit"][i]),
                 // Handle the optional "data" property.
-                data: urlParams["data"][i] ?? "",
+                data: urlParams["data"] && urlParams["data"][i] ? urlParams["data"][i] : "",
                 chainID: urlParams["chainID"][i],
                 version: parseInt(urlParams["version"][i]),
                 ...(urlParams["guardian"] && urlParams["guardian"][i] ? {guardian: urlParams["guardian"][i]} : {}),
