@@ -197,7 +197,6 @@ export class WalletProvider {
               "options"
             ];
 
-            // optional string props
             optionalFields.forEach(prop => {
               const integerOptions = ["options"];
               const hasProp = prop in urlParams && urlParams[prop][i];
