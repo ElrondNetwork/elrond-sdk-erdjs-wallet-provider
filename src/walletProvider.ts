@@ -175,37 +175,27 @@ export class WalletProvider {
 
 
         for (let i = 0; i < expectedLength; i++) {
-            
-            const transactionFields: Partial<PlainSignedTransaction> = {
-              nonce: parseInt(urlParams["nonce"][i]),
-              value: urlParams["value"][i],
-              receiver: urlParams["receiver"][i],
-              sender: urlParams["sender"][i],
-              gasPrice: parseInt(urlParams["gasPrice"][i]),
-              gasLimit: parseInt(urlParams["gasLimit"][i]),
-              signature: urlParams["signature"][i],
-              chainID: urlParams["chainID"][i],
-              version: parseInt(urlParams["version"][i])
-            };
-
-            const optionalFields: (keyof PlainSignedTransaction)[] = [
-              "data", 
-              "guardian",
-              "guardianSignature",
-              "senderUsername",
-              "receiverUsername",
-              "options"
-            ];
-
-            optionalFields.forEach(prop => {
-              const integerOptions = ["options"];
-              const hasProp = prop in urlParams && urlParams[prop][i];
-              if (hasProp) {
-                transactionFields[prop] = integerOptions.includes(prop) ? parseInt(urlParams[prop][i]) : urlParams[prop][i];
-              }
-            })
-
-            let plainSignedTransaction = new PlainSignedTransaction(transactionFields);
+            let plainSignedTransaction = new PlainSignedTransaction({
+                nonce: parseInt(urlParams["nonce"][i]),
+                value: urlParams["value"][i],
+                receiver: urlParams["receiver"][i],
+                sender: urlParams["sender"][i],
+                gasPrice: parseInt(urlParams["gasPrice"][i]),
+                gasLimit: parseInt(urlParams["gasLimit"][i]),
+                // Handle the optional "data" property.
+                data: urlParams["data"] && urlParams["data"][i] ? urlParams["data"][i] : "",
+                chainID: urlParams["chainID"][i],
+                version: parseInt(urlParams["version"][i]),
+                ...(urlParams["guardian"] && urlParams["guardian"][i] ? {guardian: urlParams["guardian"][i]} : {}),
+                ...(urlParams["guardianSignature"] && urlParams["guardianSignature"][i] ? {guardianSignature: urlParams["guardianSignature"][i]} : {}),
+                // Handle the optional "options" property.
+                ...(urlParams["options"] && urlParams["options"][i] ? {
+                    options: parseInt(urlParams["options"][i])
+                } : {}),
+                ...(urlParams["senderUsername"] && urlParams["senderUsername"][i] ? {senderUsername: urlParams["senderUsername"][i]} : {}),
+                ...(urlParams["receiverUsername"] && urlParams["receiverUsername"][i] ? {receiverUsername: urlParams["receiverUsername"][i]} : {}),
+                signature: urlParams["signature"][i]
+            });
 
             transactions.push(plainSignedTransaction);
         }

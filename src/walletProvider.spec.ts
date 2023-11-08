@@ -157,3 +157,46 @@ describe("test getTransactionsFromWalletUrl", () => {
     );
   });
 });
+
+describe("test getTransactionsFromWalletUrl with mandatory fields only", () => {
+
+
+  it("gets transactions from wallet url with mandatory fields only", async () => {
+    window.location.search = 
+          "?signSession=1693313444978" +
+          "&nonce[0]=127" +
+          "&value[0]=100000000000000000" +
+          "&receiver[0]=erd1qqqqqqqqqqqqqpgq7ykazrzd905zvnlr88dpfw06677lxe9w0n4suz00uh" +
+          "&sender[0]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th" +
+          "&gasPrice[0]=1000000000" +
+          "&gasLimit[0]=4200000" +
+          // data missing
+          "&chainID[0]=D" +
+          "&version[0]=1" +
+          "&signature[0]=414dcd2541ecdc1a41cafdd1ef4aff2ba7248402854478ee13c5a21968bd8dd4ab884335ea35c1404f85b0305f11df21615fecc9062e4668e74e8bb6a1e96c0d&walletProviderStatus=transactionsSigned";
+        
+    const walletProvider = new WalletProvider("http://mocked-wallet.com");
+    const signedTransactions = walletProvider.getTransactionsFromWalletUrl();
+
+    assert.equal(
+      JSON.stringify(signedTransactions),
+      JSON.stringify([
+        {
+          nonce: 127,
+          value: "100000000000000000",
+          receiver:
+            "erd1qqqqqqqqqqqqqpgq7ykazrzd905zvnlr88dpfw06677lxe9w0n4suz00uh",
+          sender:
+            "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",
+          gasPrice: 1000000000,
+          gasLimit: 4200000,
+          data: "",
+          chainID: "D",
+          version: 1,
+          signature:
+            "414dcd2541ecdc1a41cafdd1ef4aff2ba7248402854478ee13c5a21968bd8dd4ab884335ea35c1404f85b0305f11df21615fecc9062e4668e74e8bb6a1e96c0d",
+        },
+      ])
+    );
+  });
+});
