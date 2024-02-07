@@ -137,8 +137,8 @@ export class WalletProvider {
         await this.signTransactions([transaction], options);
     }
 
-    getTransactionsFromWalletUrl(): PlainSignedTransaction[] {
-        const urlParams = qs.parse(window.location.search.slice(1));
+    getTransactionsFromWalletUrl(search = window.location.search): PlainSignedTransaction[] {
+        const urlParams = qs.parse(search.slice(1));
         if (!WalletProvider.isTxSignReturnSuccess(urlParams)) {
             return [];
         }
