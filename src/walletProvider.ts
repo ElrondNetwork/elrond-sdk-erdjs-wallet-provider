@@ -1,4 +1,4 @@
-import { SignableMessage, Transaction } from "@multiversx/sdk-core";
+import { Address, Message, Transaction } from "@multiversx/sdk-core";
 import qs from "qs";
 import {
     WALLET_PROVIDER_CALLBACK_PARAM,
@@ -10,8 +10,14 @@ import {
 import { ErrCannotGetSignedTransactions, ErrCannotSignedMessage } from "./errors";
 import { PlainSignedTransaction } from "./plainSignedTransaction";
 
+export interface IProviderAccount {
+    address: string;
+    signature?: string;
+}
+
 export class WalletProvider {
     private readonly walletUrl: string;
+    private account: IProviderAccount = { address: "" };
 
     /**
      * Creates a new WalletProvider
@@ -24,7 +30,7 @@ export class WalletProvider {
     /**
      * Fetches the login hook url and redirects the client to the wallet login.
      */
-    async login(options?: { callbackUrl?: string; token?: string, redirectDelayMilliseconds?: number }): Promise<string> {
+    async login(options?: { callbackUrl?: string; token?: string, redirectDelayMilliseconds?: number }): Promise<null> {
         const redirectUrl = this.buildWalletUrl({
             endpoint: WALLET_PROVIDER_CONNECT_URL,
             callbackUrl: options?.callbackUrl,
@@ -34,7 +40,7 @@ export class WalletProvider {
         });
 
         await this.redirect(redirectUrl, options?.redirectDelayMilliseconds);
-        return redirectUrl;
+        return null;
     }
 
     private async redirect(url: string, delayMilliseconds?: number) {
@@ -58,6 +64,26 @@ export class WalletProvider {
         });
     }
 
+    isConnected(): boolean {
+        return Boolean(this.walletUrl);
+    }
+
+
+    /**
+    * Returns the current account
+    */
+    getAccount(): IProviderAccount | null {
+        return this.account;
+    }
+
+    /**
+    * Sets the current account
+    * @param account
+    */
+    setAccount(account: IProviderAccount): void {
+        this.account = account;
+    }
+
     /**
     * Fetches the logout hook url and redirects the client to the wallet logout.
     */
@@ -73,22 +99,29 @@ export class WalletProvider {
 
 
     /**
-     * Packs a {@link SignMessage} and fetches correct redirect URL from the wallet API. Then redirects
+     * Packs a {@link Message} and fetches correct redirect URL from the wallet API. Then redirects
      * the client to the sign message hook
      * @param message
      * @param options
      */
-    async signMessage(message: SignableMessage, options?: { callbackUrl?: string }): Promise<string> {
+    async signMessage(messageToSign: Message, options?: { callbackUrl?: string }): Promise<null> {
+        const message = new Message({
+            data: Buffer.from(messageToSign.data),
+            address:
+              messageToSign.address ?? Address.fromBech32(this.account.address),
+            signer: "web-wallet",
+            version: messageToSign.version,
+        });
         const redirectUrl = this.buildWalletUrl({
             endpoint: WALLET_PROVIDER_SIGN_MESSAGE_URL,
             callbackUrl: options?.callbackUrl,
             params: {
-                message: message.message.toString()
+                message: message.data.toString()
             }
         });
 
         await this.redirect(redirectUrl);
-        return redirectUrl;
+        return null;
     }
 
     getMessageSignatureFromWalletUrl(): string {
