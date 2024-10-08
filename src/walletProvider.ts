@@ -1,4 +1,4 @@
-import { Address, Message, Transaction } from "@multiversx/sdk-core";
+import { Message, Transaction } from "@multiversx/sdk-core";
 import qs from "qs";
 import {
     WALLET_PROVIDER_CALLBACK_PARAM,
@@ -9,7 +9,6 @@ import {
 } from "./constants";
 import { ErrCannotGetSignedTransactions, ErrCannotSignedMessage } from "./errors";
 import { PlainSignedTransaction } from "./plainSignedTransaction";
-
 
 export class WalletProvider {
     private readonly walletUrl: string;
@@ -82,8 +81,7 @@ export class WalletProvider {
     async signMessage(messageToSign: Message, options?: { callbackUrl?: string }): Promise<string> {
         const message = new Message({
             data: Buffer.from(messageToSign.data),
-            address:
-              messageToSign.address ?? Address.fromBech32(this.account.address),
+            address: messageToSign.address,
             signer: "web-wallet",
             version: messageToSign.version,
         });
