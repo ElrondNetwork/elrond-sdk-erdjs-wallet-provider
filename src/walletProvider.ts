@@ -30,7 +30,7 @@ export class WalletProvider {
     /**
      * Fetches the login hook url and redirects the client to the wallet login.
      */
-    async login(options?: { callbackUrl?: string; token?: string, redirectDelayMilliseconds?: number }): Promise<null> {
+    async login(options?: { callbackUrl?: string; token?: string, redirectDelayMilliseconds?: number }): Promise<string> {
         const redirectUrl = this.buildWalletUrl({
             endpoint: WALLET_PROVIDER_CONNECT_URL,
             callbackUrl: options?.callbackUrl,
@@ -40,7 +40,7 @@ export class WalletProvider {
         });
 
         await this.redirect(redirectUrl, options?.redirectDelayMilliseconds);
-        return null;
+        return redirectUrl;
     }
 
     private async redirect(url: string, delayMilliseconds?: number) {
@@ -104,7 +104,7 @@ export class WalletProvider {
      * @param message
      * @param options
      */
-    async signMessage(messageToSign: Message, options?: { callbackUrl?: string }): Promise<null> {
+    async signMessage(messageToSign: Message, options?: { callbackUrl?: string }): Promise<string> {
         const message = new Message({
             data: Buffer.from(messageToSign.data),
             address:
@@ -121,7 +121,7 @@ export class WalletProvider {
         });
 
         await this.redirect(redirectUrl);
-        return null;
+        return redirectUrl;
     }
 
     getMessageSignatureFromWalletUrl(): string {
