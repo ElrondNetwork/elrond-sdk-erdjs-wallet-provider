@@ -64,26 +64,6 @@ export class WalletProvider {
         });
     }
 
-    isConnected(): boolean {
-        return Boolean(this.walletUrl);
-    }
-
-
-    /**
-    * Returns the current account
-    */
-    getAccount(): IProviderAccount | null {
-        return this.account;
-    }
-
-    /**
-    * Sets the current account
-    * @param account
-    */
-    setAccount(account: IProviderAccount): void {
-        this.account = account;
-    }
-
     /**
     * Fetches the logout hook url and redirects the client to the wallet logout.
     */
