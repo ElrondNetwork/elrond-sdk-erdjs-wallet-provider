@@ -10,14 +10,9 @@ import {
 import { ErrCannotGetSignedTransactions, ErrCannotSignedMessage } from "./errors";
 import { PlainSignedTransaction } from "./plainSignedTransaction";
 
-export interface IProviderAccount {
-    address: string;
-    signature?: string;
-}
 
 export class WalletProvider {
     private readonly walletUrl: string;
-    private account: IProviderAccount = { address: "" };
 
     /**
      * Creates a new WalletProvider
