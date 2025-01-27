@@ -1,6 +1,6 @@
 {
   "name": "@multiversx/sdk-web-wallet-provider",
-  "version": "4.1.0-beta.0",
+  "version": "4.1.0-beta.1",
   "description": "Signing provider for dApps: MultiversX (Web) Wallet",
   "main": "out/index.js",
   "types": "out/index.d.js",

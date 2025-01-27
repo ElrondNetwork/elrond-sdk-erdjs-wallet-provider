@@ -199,7 +199,7 @@ export class WalletProvider {
                 ...(urlParams["senderUsername"] && urlParams["senderUsername"][i] ? {senderUsername: urlParams["senderUsername"][i]} : {}),
                 ...(urlParams["receiverUsername"] && urlParams["receiverUsername"][i] ? {receiverUsername: urlParams["receiverUsername"][i]} : {}),
                 signature: urlParams["signature"][i],
-                ...(urlParams["relayer"] && urlParams["relayer"][i] ? {guardian: urlParams["relayer"][i]} : {}),
+                ...(urlParams["relayer"] && urlParams["relayer"][i] ? { relayer: urlParams["relayer"][i] } : {}),
                 // For exotic (not yet supported) flows (where the relayer is signing the transaction in the Web Wallet).
                 ...(urlParams["relayerSignature"] && urlParams["relayerSignature"][i] ? {guardianSignature: urlParams["relayerSignature"][i]} : {}),
             });
