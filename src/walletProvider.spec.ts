@@ -86,6 +86,25 @@ describe("test wallet provider", () => {
     assert.equal(decodeURI(window.location.href), "http://mocked-wallet.com/hook/sign?nonce[0]=0&value[0]=0&receiver[0]=erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx&sender[0]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th&gasPrice[0]=1000000000&gasLimit[0]=50000&data[0]=&chainID[0]=D&version[0]=2&callbackUrl=http://another-callback");
   });
 
+  it('sign transaction redirects correctly (with relayer)', async () => {
+    const walletProvider = new WalletProvider("http://mocked-wallet.com");
+    const transaction = new Transaction({
+      sender: Address.newFromBech32("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"),
+      receiver: Address.newFromBech32("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx"),
+      relayer: Address.newFromBech32("erd1uv40ahysflse896x4ktnh6ecx43u7cmy9wnxnvcyp7deg299a4sq6vaywa"),
+      value: "0",
+      gasLimit: 100000,
+      data: new TransactionPayload("hello"),
+      gasPrice: 1000000000,
+      chainID: "D"
+    });
+
+    await walletProvider.signTransaction(transaction);
+    assert.equal(decodeURI(window.location.href), "http://mocked-wallet.com/hook/sign?nonce[0]=0&value[0]=0&receiver[0]=erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx&sender[0]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th&gasPrice[0]=1000000000&gasLimit[0]=100000&data[0]=hello&chainID[0]=D&version[0]=2&relayer[0]=erd1uv40ahysflse896x4ktnh6ecx43u7cmy9wnxnvcyp7deg299a4sq6vaywa&callbackUrl=http://return-to-wallet");
+
+    await walletProvider.signTransaction(transaction, { callbackUrl: "http://another-callback" });
+    assert.equal(decodeURI(window.location.href), "http://mocked-wallet.com/hook/sign?nonce[0]=0&value[0]=0&receiver[0]=erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx&sender[0]=erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th&gasPrice[0]=1000000000&gasLimit[0]=100000&data[0]=hello&chainID[0]=D&version[0]=2&relayer[0]=erd1uv40ahysflse896x4ktnh6ecx43u7cmy9wnxnvcyp7deg299a4sq6vaywa&callbackUrl=http://another-callback");
+  });
 
   it('sign multiple transactions redirects correctly', async () => {
     const walletProvider = new WalletProvider("http://mocked-wallet.com");
