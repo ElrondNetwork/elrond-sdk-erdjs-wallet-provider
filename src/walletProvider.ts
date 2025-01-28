@@ -159,7 +159,7 @@ export class WalletProvider {
     private getTxSignReturnValue(urlParams: any): PlainSignedTransaction[] {
         console.info("getTxSignReturnValue(), urlParams:", urlParams);
 
-        // "options", "data", "guardian", "guardianSignature", "senderUsername", "receiverUsername" properties are optional (it isn't always received from the Web Wallet)
+        // Optional: "options", "data", "guardian", "guardianSignature", "senderUsername", "receiverUsername", "relayer", "relayerSignature".
         const expectedProps = ["nonce", "value", "receiver", "sender", "gasPrice",
             "gasLimit", "chainID", "version", "signature"];
 
@@ -177,8 +177,6 @@ export class WalletProvider {
         }
 
         const transactions: PlainSignedTransaction[] = [];
-
-
 
         for (let i = 0; i < expectedLength; i++) {
             let plainSignedTransaction = new PlainSignedTransaction({
@@ -200,7 +198,10 @@ export class WalletProvider {
                 } : {}),
                 ...(urlParams["senderUsername"] && urlParams["senderUsername"][i] ? {senderUsername: urlParams["senderUsername"][i]} : {}),
                 ...(urlParams["receiverUsername"] && urlParams["receiverUsername"][i] ? {receiverUsername: urlParams["receiverUsername"][i]} : {}),
-                signature: urlParams["signature"][i]
+                signature: urlParams["signature"][i],
+                ...(urlParams["relayer"] && urlParams["relayer"][i] ? { relayer: urlParams["relayer"][i] } : {}),
+                // For exotic (not yet supported) flows (where the relayer is signing the transaction in the Web Wallet).
+                ...(urlParams["relayerSignature"] && urlParams["relayerSignature"][i] ? {guardianSignature: urlParams["relayerSignature"][i]} : {}),
             });
 
             transactions.push(plainSignedTransaction);

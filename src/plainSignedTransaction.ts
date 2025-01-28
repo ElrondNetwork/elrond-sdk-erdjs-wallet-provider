@@ -14,6 +14,8 @@ export class PlainSignedTransaction {
   guardianSignature?: string;
   senderUsername?: string;
   receiverUsername?: string;
+  relayer?: string;
+  relayerSignature?: string;
 
   constructor(init?: Partial<PlainSignedTransaction>) {
     Object.assign(this, init);
